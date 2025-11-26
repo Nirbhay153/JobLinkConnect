@@ -1,0 +1,66 @@
+/* Container */
+.forgot-container {
+  width: 350px;
+  margin: 100px auto;
+  padding: 25px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.5); /* Softened shadow color */
+  text-align: center;
+}
+
+/* Title */
+.forgot-container h2 {
+  margin-bottom: 20px;
+  font-size: 26px;
+  color:#28a745;
+}
+
+/* Input Field */
+.forgot-input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+/* Button */
+.forgot-btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  background-color: #10b981; /* Changed to green from the image */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.forgot-btn:hover {
+  background-color: #0d9d6e; /* Darker green for hover */
+}
+
+.forgot-btn:disabled {
+  background-color: #5cdba6; /* Lighter green for disabled */
+  cursor: not-allowed;
+}
+
+/* Message */
+.forgot-message {
+  margin-top: 15px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* Success Message */
+.forgot-message.success {
+  color: #28a745;
+}
+
+/* Error Message */
+.forgot-message.error {
+  color: #dc3545;
+}
