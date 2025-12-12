@@ -53,10 +53,10 @@ function Login() {
             // Existing user - redirect to appropriate dashboard
             if (user.role === 'employee') {
               console.log('Redirecting to job seeker dashboard...');
-              navigate('/jobseeker/dashboard', { state: { user } });
+              navigate('/.', { state: { user } });
             } else if (user.role === 'employer') {
               console.log('Redirecting to employer dashboard...');
-              navigate('/employer/dashboard', { state: { user } });
+              navigate('/employerdash', { state: { user } });
             } else {
               setError('Invalid user role');
             }

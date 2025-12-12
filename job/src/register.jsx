@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Register.css';
+import SkillSelect from './components/SkillSelect';
 
 const API_URL = 'http://localhost:5000';
 
@@ -59,7 +60,7 @@ function Register() {
         
         // Redirect to login after 2 seconds
         setTimeout(() => {
-          navigate('/');
+          navigate('/login');
         }, 2000);
       } else {
         setError(data.message || 'Registration failed');

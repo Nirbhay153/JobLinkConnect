@@ -104,10 +104,7 @@ const employeeProfileSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  resume: {
-    type: String,
-    default: ''
-  },
+ 
   createdAt: {
     type: Date,
     default: Date.now
@@ -163,6 +160,112 @@ const employerProfileSchema = new mongoose.Schema({
 });
 
 const EmployerProfile = mongoose.model('EmployerProfile', employerProfileSchema);
+
+// Job Schema
+const jobSchema = new mongoose.Schema({
+  employerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  title: {
+    type: String,
+    required: true
+  },
+  company: {
+    type: String,
+    required: true
+  },
+  location: {
+    type: String,
+    required: true
+  },
+  type: {
+    type: String,
+    enum: ['Full-Time', 'Part-Time', 'Contract', 'Internship', 'Freelance'],
+    required: true
+  },
+  salary: {
+    type: String,
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  requirements: {
+    type: String,
+    default: ''
+  },
+  skills: {
+    type: [String],
+    default: []
+  },
+  experience: {
+    type: String,
+    default: ''
+  },
+  status: {
+    type: String,
+    enum: ['active', 'closed'],
+    default: 'active'
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+});
+
+const Job = mongoose.model('Job', jobSchema);
+
+// Application Schema
+const applicationSchema = new mongoose.Schema({
+  jobId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Job',
+    required: true
+  },
+  applicantId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  coverLetter: {
+    type: String,
+    default: ''
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'reviewed', 'shortlisted', 'rejected', 'accepted'],
+    default: 'pending'
+  },
+  appliedAt: {
+    type: Date,
+    default: Date.now
+  }
+});
+
+const Application = mongoose.model('Application', applicationSchema);
+
+// Saved Job Schema
+const savedJobSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  jobId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Job',
+    required: true
+  },
+  savedAt: {
+    type: Date,
+    default: Date.now
+  }
+});
+
+const SavedJob = mongoose.model('SavedJob', savedJobSchema);
 
 // ==================== ROUTES ====================
 
@@ -475,6 +578,412 @@ app.post('/employer-profile', async (req, res) => {
   }
 });
 
+// ==================== JOB ROUTES ====================
+
+// Create Job (Employer only)
+app.post('/jobs', async (req, res) => {
+  try {
+    const { employerId, title, company, location, type, salary, description, requirements, skills, experience } = req.body;
+
+    if (!employerId || !title || !company || !location || !type || !salary || !description) {
+      return res.status(400).json({
+        success: false,
+        message: 'Required fields are missing'
+      });
+    }
+
+    const employer = await User.findById(employerId);
+    if (!employer || employer.role !== 'employer') {
+      return res.status(403).json({
+        success: false,
+        message: 'Only employers can post jobs'
+      });
+    }
+
+    const newJob = new Job({
+      employerId,
+      title,
+      company,
+      location,
+      type,
+      salary,
+      description,
+      requirements: requirements || '',
+      skills: skills || [],
+      experience: experience || ''
+    });
+
+    await newJob.save();
+
+    return res.status(201).json({
+      success: true,
+      message: 'Job posted successfully',
+      job: newJob
+    });
+
+  } catch (error) {
+    console.error('Create job error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error creating job'
+    });
+  }
+});
+
+// Get all jobs (with optional filters)
+app.get('/jobs', async (req, res) => {
+  try {
+    const { search, location, type, status = 'active' } = req.query;
+
+    let query = { status };
+
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { company: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    if (location) {
+      query.location = { $regex: location, $options: 'i' };
+    }
+
+    if (type) {
+      query.type = type;
+    }
+
+    const jobs = await Job.find(query)
+      .sort({ createdAt: -1 })
+      .populate('employerId', 'email');
+
+    return res.status(200).json({
+      success: true,
+      jobs
+    });
+
+  } catch (error) {
+    console.error('Get jobs error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error fetching jobs'
+    });
+  }
+});
+
+// Get single job details
+app.get('/jobs/:id', async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id)
+      .populate('employerId', 'email');
+
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        message: 'Job not found'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      job
+    });
+
+  } catch (error) {
+    console.error('Get job error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error fetching job'
+    });
+  }
+});
+
+// Get employer's jobs
+app.get('/employer/:employerId/jobs', async (req, res) => {
+  try {
+    const jobs = await Job.find({ employerId: req.params.employerId })
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      jobs
+    });
+
+  } catch (error) {
+    console.error('Get employer jobs error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error fetching jobs'
+    });
+  }
+});
+
+// Update job
+app.put('/jobs/:id', async (req, res) => {
+  try {
+    const job = await Job.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        message: 'Job not found'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Job updated successfully',
+      job
+    });
+
+  } catch (error) {
+    console.error('Update job error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error updating job'
+    });
+  }
+});
+
+// Delete job
+app.delete('/jobs/:id', async (req, res) => {
+  try {
+    const job = await Job.findByIdAndDelete(req.params.id);
+
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        message: 'Job not found'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Job deleted successfully'
+    });
+
+  } catch (error) {
+    console.error('Delete job error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error deleting job'
+    });
+  }
+});
+
+// ==================== APPLICATION ROUTES ====================
+
+// Apply for job
+app.post('/applications', async (req, res) => {
+  try {
+    const { jobId, applicantId, coverLetter } = req.body;
+
+    if (!jobId || !applicantId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Job ID and Applicant ID are required'
+      });
+    }
+
+    // Check if already applied
+    const existingApplication = await Application.findOne({ jobId, applicantId });
+    if (existingApplication) {
+      return res.status(409).json({
+        success: false,
+        message: 'You have already applied for this job'
+      });
+    }
+
+    const application = new Application({
+      jobId,
+      applicantId,
+      coverLetter: coverLetter || ''
+    });
+
+    await application.save();
+
+    return res.status(201).json({
+      success: true,
+      message: 'Application submitted successfully',
+      application
+    });
+
+  } catch (error) {
+    console.error('Apply job error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error submitting application'
+    });
+  }
+});
+
+// Get user's applications
+app.get('/user/:userId/applications', async (req, res) => {
+  try {
+    const applications = await Application.find({ applicantId: req.params.userId })
+      .populate('jobId')
+      .sort({ appliedAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      applications
+    });
+
+  } catch (error) {
+    console.error('Get applications error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error fetching applications'
+    });
+  }
+});
+
+// Get job applications (for employer)
+app.get('/job/:jobId/applications', async (req, res) => {
+  try {
+    const applications = await Application.find({ jobId: req.params.jobId })
+      .populate('applicantId', 'email')
+      .sort({ appliedAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      applications
+    });
+
+  } catch (error) {
+    console.error('Get job applications error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error fetching applications'
+    });
+  }
+});
+
+// Update application status
+app.put('/applications/:id', async (req, res) => {
+  try {
+    const { status } = req.body;
+
+    const application = await Application.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+
+    if (!application) {
+      return res.status(404).json({
+        success: false,
+        message: 'Application not found'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Application status updated',
+      application
+    });
+
+  } catch (error) {
+    console.error('Update application error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error updating application'
+    });
+  }
+});
+
+// ==================== SAVED JOBS ROUTES ====================
+
+// Save job
+app.post('/saved-jobs', async (req, res) => {
+  try {
+    const { userId, jobId } = req.body;
+
+    if (!userId || !jobId) {
+      return res.status(400).json({
+        success: false,
+        message: 'User ID and Job ID are required'
+      });
+    }
+
+    // Check if already saved
+    const existingSave = await SavedJob.findOne({ userId, jobId });
+    if (existingSave) {
+      return res.status(409).json({
+        success: false,
+        message: 'Job already saved'
+      });
+    }
+
+    const savedJob = new SavedJob({ userId, jobId });
+    await savedJob.save();
+
+    return res.status(201).json({
+      success: true,
+      message: 'Job saved successfully',
+      savedJob
+    });
+
+  } catch (error) {
+    console.error('Save job error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error saving job'
+    });
+  }
+});
+
+// Get user's saved jobs
+app.get('/user/:userId/saved-jobs', async (req, res) => {
+  try {
+    const savedJobs = await SavedJob.find({ userId: req.params.userId })
+      .populate('jobId')
+      .sort({ savedAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      savedJobs
+    });
+
+  } catch (error) {
+    console.error('Get saved jobs error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error fetching saved jobs'
+    });
+  }
+});
+
+// Remove saved job
+app.delete('/saved-jobs/:id', async (req, res) => {
+  try {
+    const savedJob = await SavedJob.findByIdAndDelete(req.params.id);
+
+    if (!savedJob) {
+      return res.status(404).json({
+        success: false,
+        message: 'Saved job not found'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Job removed from saved'
+    });
+
+  } catch (error) {
+    console.error('Remove saved job error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error removing saved job'
+    });
+  }
+});
+
 // ==================== PASSWORD RECOVERY ROUTES ====================
 
 // Forgot Password route
@@ -623,8 +1132,8 @@ app.listen(PORT, () => {
   console.log(`
 ╔════════════════════════════════════════════╗
 ║   🚀 JobLink API Server Running           ║
-║   📡 Port: ${PORT}                         ║
-║   🌐 URL: http://localhost:${PORT}         ║
+║   📡 Port: ${PORT}                           ║
+║   🌐 URL: http://localhost:${PORT}          ║
 ║   📊 MongoDB: Connected                    ║
 ║   ✅ Status: Ready                         ║
 ╚════════════════════════════════════════════╝

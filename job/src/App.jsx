@@ -6,26 +6,38 @@ import Register from './register';
 import ForgotPassword from './forgotpass';
 //import ResetPassword from './ResetPassword';
 import RoleSelection from './roleselection';
-//import EmployeeProfileSetup from './EmployeeProfileSetup';
-//import EmployerProfileSetup from './EmployerProfileSetup';
-//import JobSeekerDashboard from './JobSeekerDashboard';
-//import EmployerDashboard from './EmployerDashboard';
+import EmployeeProfileSetup from './employeeprofile';
+import EmployerProfileSetup from './employerprofile';
+import JobSeekerDashboard from './employeedash';
+import Homepage from './homepage';
+import PostJob from './postjob';
+import JobDetail from './jobdetail';
+
+import EmployerDashboard from './employerdash';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Homepage />} />
+        
+        <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         
-        <Route path="/role-selection" element={<RoleSelection />} />
+        <Route path="/roleselection" element={<RoleSelection />} />
+        <Route path="/employerprofile" element={<EmployerProfileSetup/>} />
+        <Route path="/employeeprofile" element={<EmployeeProfileSetup />} />
+        <Route path="/employeedash" element={<JobSeekerDashboard />} />
+        <Route path="/employerdash" element={<EmployerDashboard/>} />
+        <Route path="/postjob" element={<PostJob />} />
+        <Route path="/jobdetail" element={<JobDetail />} />
         {/*
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/employee-profile-setup" element={<EmployeeProfileSetup />} />
-        <Route path="/employer-profile-setup" element={<EmployerProfileSetup />} />
-        <Route path="/jobseeker/dashboard" element={<JobSeekerDashboard />} />
-        <Route path="/employer/dashboard" element={<EmployerDashboard />} />*/}
+        
+        
+        
+        */}
       </Routes>
     </Router>
   );

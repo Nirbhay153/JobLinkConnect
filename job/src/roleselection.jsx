@@ -42,9 +42,9 @@ function roleselection() {
       if (response.ok && data.success) {
         // Redirect to profile setup based on role
         if (selectedRole === 'employee') {
-          navigate('/employee-profile-setup', { state: { user: data.user } });
+          navigate('/employeeprofile', { state: { user: data.user } });
         } else {
-          navigate('/employer-profile-setup', { state: { user: data.user } });
+          navigate('/employerprofile', { state: { user: data.user } });
         }
       } else {
         setError(data.message || 'Failed to set role');
