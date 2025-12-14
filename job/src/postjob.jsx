@@ -92,7 +92,7 @@ function PostJob() {
         });
         
         setTimeout(() => {
-          navigate('/employer/dashboard', { state: { user } });
+          navigate('/employerdash', { state: { user } });
         }, 2000);
       } else {
         setError(data.message || 'Failed to post job');
@@ -104,12 +104,17 @@ function PostJob() {
     }
   };
 
+  // Don't render if not authenticated
+  if (!user || user.role !== 'employer') {
+    return null;
+  }
+
   return (
     <div className="post-job-container">
       <div className="post-job-header">
         <button 
           className="back-btn"
-          onClick={() => navigate('/employer/dashboard', { state: { user } })}
+          onClick={() => navigate('/employerdash', { state: { user } })}
         >
           ← Back to Dashboard
         </button>
@@ -252,7 +257,7 @@ function PostJob() {
 
           <div className="button-group">
             <button
-              onClick={() => navigate('/employer/dashboard', { state: { user } })}
+              onClick={() => navigate('/employerdash', { state: { user } })}
               className="cancel-btn"
             >
               Cancel

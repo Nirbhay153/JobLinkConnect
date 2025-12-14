@@ -12,6 +12,8 @@ import JobSeekerDashboard from './employeedash';
 import Homepage from './homepage';
 import PostJob from './postjob';
 import JobDetail from './jobdetail';
+import ManageJobs from './managejobs';
+import ViewApplications from './viewapp';
 
 import EmployerDashboard from './employerdash';
 
@@ -32,6 +34,8 @@ function App() {
         <Route path="/employerdash" element={<EmployerDashboard/>} />
         <Route path="/postjob" element={<PostJob />} />
         <Route path="/jobdetail" element={<JobDetail />} />
+        <Route path="/manage-jobs" element={<ManageJobs />} />
+        <Route path="/view-applications" element={<ViewApplications />} />
         {/*
         <Route path="/reset-password" element={<ResetPassword />} />
         

@@ -1,0 +1,203 @@
+/* src/ViewApplications.css */
+
+.applications-container {
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  padding: 24px;
+}
+
+.applications-header {
+  max-width: 1400px;
+  margin: 0 auto 24px;
+}
+
+.applications-content {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.applications-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 24px;
+}
+
+.jobs-sidebar {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  height: fit-content;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 16px;
+}
+
+.sidebar-job {
+  padding: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 8px;
+  border: 2px solid transparent;
+}
+
+.sidebar-job:hover {
+  background-color: #f9fafb;
+}
+
+.sidebar-job.active {
+  background-color: #d1fae5;
+  border-color: #10b981;
+}
+
+.sidebar-job h4 {
+  font-size: 16px;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.sidebar-job p {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.applications-main {
+  background-color: white;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.selected-job-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.applications-count {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+.applications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.application-card {
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.application-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.applicant-email {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.applied-date {
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+.application-status {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.cover-letter {
+  margin-bottom: 16px;
+  padding: 16px;
+  background-color: white;
+  border-radius: 6px;
+}
+
+.cover-letter h5 {
+  font-size: 14px;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.cover-letter p {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.application-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.status-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.status-btn.reviewed {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.status-btn.shortlisted {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-btn.accepted {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-btn.rejected {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.status-btn:hover {
+  opacity: 0.8;
+}
+
+.no-applications {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+@media (max-width: 968px) {
+  .applications-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .jobs-sidebar {
+    height: auto;
+  }
+}

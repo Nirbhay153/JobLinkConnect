@@ -342,6 +342,36 @@
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 24px;
   margin-bottom: 48px;
+  min-height: 300px;
+}
+
+.loading-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 18px;
+  color: #6b7280;
+}
+
+.no-jobs-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  border: 2px dashed #d1d5db;
+}
+
+.no-jobs-message p {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 8px 0;
+}
+
+.no-jobs-message p:first-child {
+  font-size: 20px;
+  font-weight: 600;
+  color: #374151;
 }
 
 .job-card {

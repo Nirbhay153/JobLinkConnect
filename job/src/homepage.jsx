@@ -1,13 +1,17 @@
 // src/Homepage.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import './Homepage.css';
+import './homepage.css';
+
+const API_URL = 'http://localhost:5000';
 
 function Homepage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Check if user is logged in
   useEffect(() => {
@@ -16,53 +20,25 @@ function Homepage() {
     }
   }, [location.state]);
 
-  // Dummy job data
-  const jobs = [
-    {
-      id: 1,
-      title: 'Frontend Developer',
-      company: 'Tech Solutions Inc.',
-      location: 'Mumbai, Maharashtra',
-      type: 'Full-Time',
-      salary: '₹8-12 LPA',
-      description: 'Looking for an experienced React developer to join our dynamic team. Must have 2+ years of experience.',
-      postedDate: '2 days ago',
-      logo: '💻'
-    },
-    {
-      id: 2,
-      title: 'Backend Developer',
-      company: 'Digital Innovations',
-      location: 'Bangalore, Karnataka',
-      type: 'Full-Time',
-      salary: '₹10-15 LPA',
-      description: 'Seeking a Node.js expert to build scalable backend systems. Experience with MongoDB required.',
-      postedDate: '3 days ago',
-      logo: '⚙️'
-    },
-    {
-      id: 3,
-      title: 'Full Stack Developer',
-      company: 'StartUp Hub',
-      location: 'Pune, Maharashtra',
-      type: 'Full-Time',
-      salary: '₹12-18 LPA',
-      description: 'Join our startup as a full stack developer. Work with modern tech stack and shape the product.',
-      postedDate: '5 days ago',
-      logo: '🚀'
-    },
-    {
-      id: 4,
-      title: 'UI/UX Designer',
-      company: 'Creative Studios',
-      location: 'Delhi, NCR',
-      type: 'Contract',
-      salary: '₹6-10 LPA',
-      description: 'Design beautiful and intuitive user interfaces. Portfolio required. Figma expertise is a must.',
-      postedDate: '1 week ago',
-      logo: '🎨'
+  // Fetch jobs from backend
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
+  const fetchJobs = async () => {
+    try {
+      const response = await fetch(`${API_URL}/jobs`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setJobs(data.jobs);
+      }
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   const handleLogin = () => {
     setMenuOpen(false);
@@ -77,12 +53,67 @@ function Homepage() {
 
   const handleApplyNow = (jobId) => {
     if (user && user.role === 'employee') {
-      // Logged in - show application form or save
-      alert(`Application submitted for Job ID: ${jobId}`);
+      // Navigate to job detail page
+      navigate(`/job/${jobId}`, { state: { user } });
     } else {
       // Not logged in - redirect to login
       navigate('/', { state: { message: 'Please login to apply for jobs' } });
     }
+  };
+
+  const handleSaveJob = async (jobId) => {
+    if (!user) {
+      navigate('/');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/saved-jobs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          jobId: jobId
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert('Job saved successfully!');
+      } else {
+        alert(data.message || 'Failed to save job');
+      }
+    } catch (err) {
+      alert('Error saving job');
+    }
+  };
+
+  const getJobLogo = (title) => {
+    // Generate emoji based on job title keywords
+    const titleLower = title.toLowerCase();
+    if (titleLower.includes('frontend') || titleLower.includes('react')) return '💻';
+    if (titleLower.includes('backend') || titleLower.includes('node')) return '⚙️';
+    if (titleLower.includes('full stack') || titleLower.includes('fullstack')) return '🚀';
+    if (titleLower.includes('design') || titleLower.includes('ui/ux')) return '🎨';
+    if (titleLower.includes('data') || titleLower.includes('analyst')) return '📊';
+    if (titleLower.includes('mobile') || titleLower.includes('android') || titleLower.includes('ios')) return '📱';
+    if (titleLower.includes('devops') || titleLower.includes('cloud')) return '☁️';
+    if (titleLower.includes('manager') || titleLower.includes('lead')) return '👔';
+    return '💼'; // Default
+  };
+
+  const getTimeAgo = (date) => {
+    const now = new Date();
+    const posted = new Date(date);
+    const diffTime = Math.abs(now - posted);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+    return `${Math.floor(diffDays / 30)} months ago`;
   };
 
   const toggleMenu = () => {
@@ -102,7 +133,7 @@ function Homepage() {
       {/* Navigation Bar */}
       <nav className="navbar-home">
         <div className="nav-container">
-          <div className="nav-brand" onClick={() => navigate('/')}>
+          <div className="nav-brand" onClick={() => navigate('/home')}>
             <span className="brand-logo">💼</span>
             <span className="brand-name">JobLink</span>
           </div>
@@ -134,7 +165,7 @@ function Homepage() {
                 <a href="#companies" className="nav-link">Companies</a>
                 <a href="#about" className="nav-link">About</a>
                 <a href="#contact" className="nav-link">Contact</a>
-                <button onClick={() => navigate('/login')} className="login-btn">Login</button>
+                <button onClick={handleLogin} className="login-btn">Login</button>
               </div>
 
               {/* Mobile Menu Button */}
@@ -169,7 +200,7 @@ function Homepage() {
                 <a href="#contact" className="mobile-link" onClick={() => setMenuOpen(false)}>Contact</a>
                 <a href="#resources" className="mobile-link" onClick={() => setMenuOpen(false)}>Resources</a>
                 <a href="#blog" className="mobile-link" onClick={() => setMenuOpen(false)}>Blog</a>
-                <button  onClick={() => navigate('/')} className="mobile-login-btn">Login / Sign Up</button>
+                <button onClick={handleLogin} className="mobile-login-btn">Login / Sign Up</button>
               </>
             )}
           </div>
@@ -205,13 +236,16 @@ function Homepage() {
           {!user && (
             <div className="hero-stats">
               <div className="stat-item">
-                <span className="stat-label">Apply for Jobs</span>
+                <span className="stat-number">10,000+</span>
+                <span className="stat-label">Jobs Available</span>
               </div>
               <div className="stat-item">
-                <span className="stat-label">Build Resume</span>
+                <span className="stat-number">5,000+</span>
+                <span className="stat-label">Companies</span>
               </div>
               <div className="stat-item">
-                <span className="stat-label">Post Jobs</span>
+                <span className="stat-number">50,000+</span>
+                <span className="stat-label">Job Seekers</span>
               </div>
             </div>
           )}
@@ -232,60 +266,79 @@ function Homepage() {
         </div>
 
         <div className="jobs-grid">
-          {jobs.map((job) => (
-            <div key={job.id} className="job-card">
-              <div className="job-header">
-                <div className="company-logo">{job.logo}</div>
-                <div className="job-badge">{job.type}</div>
-              </div>
-              
-              <h3 className="job-title">{job.title}</h3>
-              <div className="company-info">
-                <span className="company-name">{job.company}</span>
-              </div>
-              
-              <div className="job-details">
-                <div className="job-detail-item">
-                  <span className="detail-icon">📍</span>
-                  <span>{job.location}</span>
+          {loading ? (
+            <div className="loading-message">Loading jobs...</div>
+          ) : jobs.length === 0 ? (
+            <div className="no-jobs-message">
+              <p>No jobs available at the moment.</p>
+              <p>Check back soon for new opportunities!</p>
+            </div>
+          ) : (
+            jobs.map((job) => (
+              <div key={job._id} className="job-card">
+                <div className="job-header">
+                  <div className="company-logo">{getJobLogo(job.title)}</div>
+                  <div className="job-badge">{job.type}</div>
                 </div>
-                <div className="job-detail-item">
-                  <span className="detail-icon">💰</span>
-                  <span>{job.salary}</span>
+                
+                <h3 
+                  className="job-title"
+                  onClick={() => navigate(`/job/${job._id}`, { state: { user } })}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {job.title}
+                </h3>
+                <div className="company-info">
+                  <span className="company-name">{job.company}</span>
                 </div>
-              </div>
+                
+                <div className="job-details">
+                  <div className="job-detail-item">
+                    <span className="detail-icon">📍</span>
+                    <span>{job.location}</span>
+                  </div>
+                  <div className="job-detail-item">
+                    <span className="detail-icon">💰</span>
+                    <span>{job.salary}</span>
+                  </div>
+                </div>
 
-              <p className="job-description">{job.description}</p>
+                <p className="job-description">
+                  {job.description.length > 120 
+                    ? job.description.substring(0, 120) + '...' 
+                    : job.description}
+                </p>
 
-              <div className="job-footer">
-                <span className="posted-date">{job.postedDate}</span>
-                {user && user.role === 'employee' ? (
-                  <div className="job-actions">
-                    <button 
-                      className="save-btn"
-                      onClick={() => alert('Job saved!')}
-                      title="Save job"
-                    >
-                      ❤️
-                    </button>
+                <div className="job-footer">
+                  <span className="posted-date">{getTimeAgo(job.createdAt)}</span>
+                  {user && user.role === 'employee' ? (
+                    <div className="job-actions">
+                      <button 
+                        className="save-btn"
+                        onClick={() => handleSaveJob(job._id)}
+                        title="Save job"
+                      >
+                        ❤️
+                      </button>
+                      <button 
+                        className="apply-btn"
+                        onClick={() => handleApplyNow(job._id)}
+                      >
+                        View Details
+                      </button>
+                    </div>
+                  ) : (
                     <button 
                       className="apply-btn"
-                       onClick={() => navigate('/jobdetail')}
+                      onClick={() => handleApplyNow(job._id)}
                     >
-                      Apply Now
+                      View Details
                     </button>
-                  </div>
-                ) : (
-                  <button 
-                    className="apply-btn"
-                    onClick={() => navigate('/jobdetail')}
-                  >
-                    Apply Now
-                  </button>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
         <div className="view-all-section">
@@ -305,7 +358,7 @@ function Homepage() {
               <button className="cta-btn primary" onClick={() => navigate('/register')}>
                 Create Account
               </button>
-              <button className="cta-btn secondary" onClick={() => navigate('/login')}>
+              <button className="cta-btn secondary" onClick={handleLogin}>
                 Login
               </button>
             </div>
@@ -348,4 +401,4 @@ function Homepage() {
 }
 
 export default Homepage;
-  
+ 
