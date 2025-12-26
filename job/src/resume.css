@@ -1,0 +1,90 @@
+/* Page */
+.resume-container {
+  background: #111;
+  min-height: 100vh;
+  padding: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Download Button */
+.download-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 10px 16px;
+  background: #a8c7a1;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Resume */
+.resume {
+  width: 800px;
+  background: #1e1e1e;
+  padding: 40px;
+  font-family: Georgia, serif;
+  color: #c7d3c0;
+}
+
+.name {
+  font-size: 42px;
+  color: #a8c7a1;
+}
+
+.role {
+  font-size: 18px;
+  margin-bottom: 30px;
+}
+
+/* Sections */
+section {
+  margin-bottom: 25px;
+}
+
+h2 {
+  color: #a8c7a1;
+  border-bottom: 1px solid #333;
+  margin-bottom: 12px;
+}
+
+.text {
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.block {
+  margin-bottom: 10px;
+}
+
+/* Skills */
+.skills {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.skill {
+  background: #2a2a2a;
+  padding: 6px;
+  text-align: center;
+  border-radius: 4px;
+  color: #b8d8b8;
+}
+
+/* Print (PDF) */
+@media print {
+  body {
+    background: white;
+  }
+
+  .download-btn {
+    display: none;
+  }
+
+  .resume {
+    background: white;
+    color: black;
+  }
+}

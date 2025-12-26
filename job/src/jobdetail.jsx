@@ -1,7 +1,7 @@
 // src/JobDetail.js
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import './JobDetail.css';
+import './jobdetail.css';
 
 const API_URL = 'http://localhost:5000';
 

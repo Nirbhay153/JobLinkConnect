@@ -1,7 +1,7 @@
 // src/Homepage.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import './homepage.css';
+import './Homepage.css';
 
 const API_URL = 'http://localhost:5000';
 
@@ -42,7 +42,7 @@ function Homepage() {
 
   const handleLogin = () => {
     setMenuOpen(false);
-    navigate('/');
+    navigate('/login');
   };
 
   const handleLogout = () => {
@@ -57,13 +57,13 @@ function Homepage() {
       navigate(`/job/${jobId}`, { state: { user } });
     } else {
       // Not logged in - redirect to login
-      navigate('/', { state: { message: 'Please login to apply for jobs' } });
+      navigate('/login', { state: { message: 'Please login to apply for jobs' } });
     }
   };
 
   const handleSaveJob = async (jobId) => {
     if (!user) {
-      navigate('/');
+      navigate('/login');
       return;
     }
 
@@ -122,18 +122,19 @@ function Homepage() {
 
   // Get user's first name from email or full name
   const getUserName = () => {
-    if (user?.email) {
-      return user.email.split('@')[0];
-    }
-    return 'User';
-  };
+  if (user?.fullName) {
+    return user.fullName;
+  }
+  return 'user';
+};
+
 
   return (
     <div className="homepage">
       {/* Navigation Bar */}
       <nav className="navbar-home">
         <div className="nav-container">
-          <div className="nav-brand" onClick={() => navigate('/home')}>
+          <div className="nav-brand" onClick={() => navigate('/')}>
             <span className="brand-logo">💼</span>
             <span className="brand-name">JobLink</span>
           </div>
@@ -143,12 +144,21 @@ function Homepage() {
             // Logged-in User Bar
             <>
               <div className="user-bar-desktop">
-                <span className="welcome-text">Hi {getUserName()}</span>
+                <span className="welcome-text">Welcome {getUserName()}</span>
+
                 <span className="user-divider">|</span>
-                <a href="#applications" className="user-link">Applications</a>
+                <button onClick={() => navigate('/savedjobs', { state: { user } })} className="nav-link">
+                  Application
+                </button>
                 <span className="user-divider">|</span>
-                <a href="#saved" className="user-link">Saved Jobs</a>
+                <button onClick={() => navigate('/savedjobs', { state: { user } })} className="nav-link">
+                  Saved Jobs
+                </button>
                 <span className="user-divider">|</span>
+                <button onClick={() => navigate('/resume', { state: { user } })} className="nav-link">
+                  Resume
+                </button>
+                 <span className="user-divider">|</span>
                 <button onClick={handleLogout} className="logout-link">Logout</button>
               </div>
 
@@ -186,7 +196,14 @@ function Homepage() {
                   <span className="mobile-welcome">Hi {getUserName()}</span>
                 </div>
                 <a href="#applications" className="mobile-link" onClick={() => setMenuOpen(false)}>My Applications</a>
-                <a href="#saved" className="mobile-link" onClick={() => setMenuOpen(false)}>Saved Jobs</a>
+                <button onClick={() => {
+                    setMenuOpen(false);
+                    navigate('/saved-jobs', { state: { user } }); }} 
+                  className="mobile-link"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', width: '100%' }}
+                >
+                  Saved Jobs
+                </button>
                 <a href="#jobs" className="mobile-link" onClick={() => setMenuOpen(false)}>Browse Jobs</a>
                 <a href="#profile" className="mobile-link" onClick={() => setMenuOpen(false)}>My Profile</a>
                 <button onClick={handleLogout} className="mobile-logout-btn">Logout</button>
@@ -226,11 +243,7 @@ function Homepage() {
               placeholder="Job title, keywords..."
               className="search-input"
             />
-            <input
-              type="text"
-              placeholder="Location"
-              className="search-input"
-            />
+           
             <button className="search-btn">Search Jobs</button>
           </div>
           {!user && (

@@ -14,7 +14,8 @@ import PostJob from './postjob';
 import JobDetail from './jobdetail';
 import ManageJobs from './managejobs';
 import ViewApplications from './viewapp';
-
+import SavedJobs from './savedjobs';
+import ResumeBuilder from'./resume';
 import EmployerDashboard from './employerdash';
 
 function App() {
@@ -26,16 +27,17 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        
+        <Route path="/savedjobs" element={<SavedJobs />} />
         <Route path="/roleselection" element={<RoleSelection />} />
         <Route path="/employerprofile" element={<EmployerProfileSetup/>} />
         <Route path="/employeeprofile" element={<EmployeeProfileSetup />} />
         <Route path="/employeedash" element={<JobSeekerDashboard />} />
         <Route path="/employerdash" element={<EmployerDashboard/>} />
         <Route path="/postjob" element={<PostJob />} />
-        <Route path="/jobdetail" element={<JobDetail />} />
-        <Route path="/manage-jobs" element={<ManageJobs />} />
-        <Route path="/view-applications" element={<ViewApplications />} />
+                <Route path="/job/:id" element={<JobDetail />} />
+        <Route path="/resume" element={<ResumeBuilder />}/>
+        <Route path="/managejobs" element={<ManageJobs />} />
+        <Route path="/viewapplications" element={<ViewApplications />} />
         {/*
         <Route path="/reset-password" element={<ResetPassword />} />
         

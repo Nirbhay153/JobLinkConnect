@@ -66,19 +66,19 @@ function EmployerDashboard() {
   };
 
   const handlePostJob = () => {
-    navigate('/post-job', { state: { user } });
+    navigate('/postjob', { state: { user } });
   };
 
   const handleManageJobs = () => {
-    navigate('/manage-jobs', { state: { user } });
+    navigate('/managejobs', { state: { user } });
   };
 
   const handleViewApplications = () => {
-    navigate('/view-applications', { state: { user } });
+    navigate('/viewapplications', { state: { user } });
   };
 
   const handleEditProfile = () => {
-    navigate('/employer-profile-edit', { state: { user } });
+    navigate('/employerprofileedit', { state: { user } });
   };
 
   // Don't render if not authenticated

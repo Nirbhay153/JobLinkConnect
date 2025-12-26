@@ -111,7 +111,7 @@ function ManageJobs() {
       <div className="manage-jobs-header">
         <button 
           className="back-btn"
-          onClick={() => navigate('/employer/dashboard', { state: { user } })}
+          onClick={() => navigate('/employerdash', { state: { user } })}
         >
           ← Back to Dashboard
         </button>
